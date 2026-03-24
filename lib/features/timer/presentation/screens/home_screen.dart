@@ -1,25 +1,53 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:focusify_app/features/timer/application/providers/timer_provider.dart'; // ✅ FIX
+import 'package:focusify_app/features/timer/application/providers/timer_provider.dart';
+import 'package:focusify_app/features/timer/application/providers/settings_provider.dart';
 import 'package:focusify_app/shared/widgets/buttons/circle_button.dart';
 import 'package:focusify_app/features/timer/presentation/widgets/timer_widget.dart';
 import 'package:go_router/go_router.dart';
 
-class HomeScreen extends ConsumerStatefulWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  ConsumerState<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends ConsumerState<HomeScreen> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // THEMES
     final theme = Theme.of(context);
     final primary = theme.colorScheme.primary;
 
+    // TIMER STATE
     final timerState = ref.watch(timerProvider);
     final timerController = ref.read(timerProvider.notifier);
+
+    // SETTINGS
+    final settings = ref.watch(settingsProvider);
+
+    String sessionType() {
+      if (timerState.remainingSeconds == timerState.totalSeconds &&
+          timerState.sessionCount == 0) {
+        return "FOCUS";
+      }
+
+      final isLongBreak =
+          (timerState.sessionCount % settings.cyclesBeforeLongBreak == 0) &&
+          timerState.sessionCount != 0;
+
+      if (isLongBreak) return "DESCANSO LARGO";
+
+      return timerState.sessionCount.isOdd ? "DESCANSO CORTO" : "FOCUS";
+    }
+
+    int currentCycle() {
+      int cycle = (timerState.sessionCount ~/ 2) + 1;
+
+      if (cycle > settings.cyclesBeforeLongBreak) {
+        cycle = settings.cyclesBeforeLongBreak;
+      }
+
+      return cycle;
+    }
+
+    final currentSession = sessionType();
 
     return Scaffold(
       body: SafeArea(
@@ -27,10 +55,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           children: [
             const SizedBox(height: 40),
 
-            const Text(
-              "FOCUS",
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            Text(
+              sessionType(),
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
+
+            const SizedBox(height: 8),
+
+            if (currentSession == "FOCUS")
+              Text(
+                'Ciclo: ${currentCycle()} / ${settings.cyclesBeforeLongBreak}',
+                style: TextStyle(fontSize: 16, color: Colors.grey),
+              ),
 
             const SizedBox(height: 20),
 

@@ -1,30 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focusify_app/core/theme/theme_provider.dart';
+import 'package:focusify_app/features/timer/application/providers/settings_provider.dart';
 import '../widgets/slider_card.dart';
 import '../widgets/switch_card.dart';
 import '../widgets/theme_card.dart';
 
-class SettingScreen extends ConsumerStatefulWidget {
+class SettingScreen extends ConsumerWidget {
   const SettingScreen({super.key});
 
   @override
-  ConsumerState<SettingScreen> createState() => _SettingScreenState();
-}
-
-class _SettingScreenState extends ConsumerState<SettingScreen> {
-  double focus = 25;
-  double shortBreak = 5;
-  double longBreak = 15;
-
-  bool autoStart = false;
-  bool notification = true;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final t = Theme.of(context);
+
+    // Lectura del tema
     final themeMode = ref.watch(themeProvider);
     final themeController = ref.read(themeProvider.notifier);
+
+    // Lectura de configuraciones del temporizador
+    final settings = ref.watch(settingsProvider);
+
+    // Estados locales para switches
+    bool autoStart = false;
+    bool notification = true;
 
     return Scaffold(
       backgroundColor: t.scaffoldBackgroundColor,
@@ -37,31 +35,48 @@ class _SettingScreenState extends ConsumerState<SettingScreen> {
               const SizedBox(height: 30),
               _TitleSection(theme: t),
               const SizedBox(height: 25),
+
+              // Temporizador
               _SectionTitle(title: "CONFIGURACIÓN DEL TEMPORIZADOR", theme: t),
               SliderCard(
                 title: "Duración del enfoque",
-                value: focus,
+                value: settings.focusMinutes.toDouble(),
                 unit: "MIN",
                 min: 5,
                 max: 60,
-                onChanged: (v) => setState(() => focus = v),
+                onChanged: (v) =>
+                    ref.read(settingsProvider.notifier).updateFocus(v.round()),
               ),
               SliderCard(
                 title: "Descanso corto",
-                value: shortBreak,
+                value: settings.shortBreakMinutes.toDouble(),
                 unit: "MIN",
                 min: 1,
                 max: 15,
-                onChanged: (v) => setState(() => shortBreak = v),
+                onChanged: (v) => ref
+                    .read(settingsProvider.notifier)
+                    .updateShortBreak(v.round()),
               ),
               SliderCard(
                 title: "Descanso largo",
-                value: longBreak,
+                value: settings.longBreakMinutes.toDouble(),
                 unit: "MIN",
                 min: 5,
                 max: 45,
-                onChanged: (v) => setState(() => longBreak = v),
+                onChanged: (v) => ref
+                    .read(settingsProvider.notifier)
+                    .updateLongBreak(v.round()),
               ),
+              SliderCard(
+                title: "Ciclos antes de descanso largo",
+                value: settings.cyclesBeforeLongBreak.toDouble(),
+                unit: "CICLOS",
+                min: 1,
+                max: 10,
+                onChanged: (v) =>
+                    ref.read(settingsProvider.notifier).updateCycles(v.round()),
+              ),
+
               const SizedBox(height: 20),
               _SectionTitle(title: "AUTOMATION & FEEDBACK", theme: t),
               SwitchCard(
@@ -69,15 +84,16 @@ class _SettingScreenState extends ConsumerState<SettingScreen> {
                 subtitle:
                     "Inicia automáticamente el enfoque o el descanso después de que el temporizador expire",
                 value: autoStart,
-                onChanged: (v) => setState(() => autoStart = v),
+                onChanged: (v) => autoStart = v,
               ),
               SwitchCard(
                 title: "Sonido de notificación",
                 subtitle:
                     "Reproduce un sonido suave cuando el temporizador finalice",
                 value: notification,
-                onChanged: (v) => setState(() => notification = v),
+                onChanged: (v) => notification = v,
               ),
+
               const SizedBox(height: 20),
               _SectionTitle(title: "AESTHETIC ENVIRONMENT", theme: t),
               Row(

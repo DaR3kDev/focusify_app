@@ -4,6 +4,7 @@ import 'package:focusify_app/features/timer/domain/pomodoro_settings.dart';
 class SettingsController extends Notifier<PomodoroSettings> {
   @override
   PomodoroSettings build() {
+    // Estado inicial con valores por defecto
     return const PomodoroSettings(
       focusMinutes: 25,
       shortBreakMinutes: 5,
@@ -12,33 +13,43 @@ class SettingsController extends Notifier<PomodoroSettings> {
     );
   }
 
-  /// ----------------------
-  /// UPDATE METHODS
-  /// ----------------------
+  // ========================
+  // MÉTODOS PÚBLICOS
+  // ========================
 
+  /// Actualiza la duración de la sesión de enfoque
   void updateFocus(int minutes) {
-    if (!_isValidFocus(minutes)) return;
-
-    state = state.copyWith(focusMinutes: minutes);
+    if (_isValidFocus(minutes)) {
+      _updateState(state.copyWith(focusMinutes: minutes));
+    }
   }
 
+  /// Actualiza la duración del descanso corto
   void updateShortBreak(int minutes) {
-    state = state.copyWith(shortBreakMinutes: minutes);
+    _updateState(state.copyWith(shortBreakMinutes: minutes));
   }
 
+  /// Actualiza la duración del descanso largo
   void updateLongBreak(int minutes) {
-    state = state.copyWith(longBreakMinutes: minutes);
+    _updateState(state.copyWith(longBreakMinutes: minutes));
   }
 
+  /// Actualiza la cantidad de ciclos antes de un descanso largo
   void updateCycles(int cycles) {
-    state = state.copyWith(cyclesBeforeLongBreak: cycles);
+    if (cycles > 0) {
+      _updateState(state.copyWith(cyclesBeforeLongBreak: cycles));
+    }
   }
 
-  /// ----------------------
-  /// VALIDATIONS
-  /// ----------------------
+  // ========================
+  // MÉTODOS INTERNOS
+  // ========================
 
-  bool _isValidFocus(int minutes) {
-    return minutes >= 5 && minutes <= 60;
+  /// Valida que el enfoque esté dentro de un rango razonable
+  bool _isValidFocus(int minutes) => minutes >= 5 && minutes <= 60;
+
+  /// Método centralizado para actualizar el estado
+  void _updateState(PomodoroSettings newState) {
+    state = newState;
   }
 }
