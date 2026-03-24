@@ -10,8 +10,6 @@ class BottomNavBar extends StatefulWidget {
   final int currentIndex;
   final Function(int) onTap;
 
-  static const Color primaryColor = Color(0xFFFF8A3D);
-
   @override
   State<BottomNavBar> createState() => _BottomNavBarState();
 }
@@ -28,16 +26,23 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
+    final surface = theme.colorScheme.surface;
+    final isDark = theme.brightness == Brightness.dark;
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
       child: Container(
         height: 72,
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.9),
+          color: surface.withValues(alpha: isDark ? 0.9 : 0.95),
           borderRadius: BorderRadius.circular(28),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
+              color: isDark
+                  ? Colors.black.withValues(alpha: 0.4)
+                  : Colors.black.withValues(alpha: 0.05),
               blurRadius: 20,
               offset: const Offset(0, 8),
             ),
@@ -60,7 +65,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
                     padding: EdgeInsets.all(isSelected ? 13 : 10),
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? BottomNavBar.primaryColor.withValues(alpha: 0.15)
+                          ? primary.withValues(alpha: 0.15)
                           : Colors.transparent,
                       shape: BoxShape.circle,
                     ),
@@ -68,8 +73,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
                       icons[index],
                       size: 24,
                       color: isSelected
-                          ? BottomNavBar.primaryColor
-                          : Colors.grey.shade500,
+                          ? primary
+                          : theme.iconTheme.color?.withValues(alpha: 0.6),
                     ),
                   ),
 
@@ -89,10 +94,10 @@ class _BottomNavBarState extends State<BottomNavBar> {
                             padding: const EdgeInsets.only(top: 2),
                             child: Text(
                               labels[index],
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w500,
-                                color: BottomNavBar.primaryColor,
+                                color: primary,
                               ),
                             ),
                           )
