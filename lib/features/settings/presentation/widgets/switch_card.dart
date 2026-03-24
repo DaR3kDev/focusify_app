@@ -21,31 +21,65 @@ class SwitchCard extends StatefulWidget {
 class _SwitchCardState extends State<SwitchCard> {
   @override
   Widget build(BuildContext context) {
-    final t = Theme.of(context);
+    final theme = Theme.of(context);
+
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(14),
+      margin: const EdgeInsets.only(bottom: 14),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: t.cardColor,
-        borderRadius: BorderRadius.circular(16),
+        color: theme.cardColor,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: theme.colorScheme.primary.withValues(alpha: 0.1),
+            blurRadius: 6,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Row(
         children: [
-          Icon(Icons.circle, size: 8, color: t.iconTheme.color?.withAlpha(100)),
-          const SizedBox(width: 10),
+          Icon(
+            Icons.circle,
+            size: 10,
+            color: theme.iconTheme.color?.withValues(alpha: 0.3),
+          ),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(widget.title, style: t.textTheme.bodyMedium),
+                Text(
+                  widget.title,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(height: 2),
                 Text(
                   widget.subtitle,
-                  style: t.textTheme.bodySmall?.copyWith(fontSize: 11),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    fontSize: 11,
+                    color: theme.textTheme.bodySmall?.color?.withValues(
+                      alpha: 0.7,
+                    ),
+                  ),
                 ),
               ],
             ),
           ),
-          Switch(value: widget.value, onChanged: widget.onChanged),
+          Switch(
+            value: widget.value,
+            onChanged: widget.onChanged,
+            activeThumbColor: theme.colorScheme.primary,
+            inactiveThumbColor: theme.colorScheme.onSurface.withValues(
+              alpha: 0.6,
+            ),
+            inactiveTrackColor: theme.colorScheme.onSurface.withValues(
+              alpha: 0.3,
+            ),
+          ),
         ],
       ),
     );

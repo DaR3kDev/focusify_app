@@ -20,7 +20,7 @@ class ThemeCard extends StatefulWidget {
 class _ThemeCardState extends State<ThemeCard> {
   @override
   Widget build(BuildContext context) {
-    final t = Theme.of(context);
+    final theme = Theme.of(context);
     final isSelected =
         (widget.themeMode == ThemeMode.dark && widget.type == "dark") ||
         (widget.themeMode == ThemeMode.light && widget.type == "light");
@@ -35,24 +35,45 @@ class _ThemeCardState extends State<ThemeCard> {
           }
         },
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 350),
+          duration: const Duration(milliseconds: 400),
           curve: Curves.easeInOut,
-          height: 90,
+          height: 100,
+          margin: const EdgeInsets.symmetric(vertical: 6),
           decoration: BoxDecoration(
-            color: t.cardColor,
-            borderRadius: BorderRadius.circular(14),
+            color: theme.cardColor,
+            borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: isSelected ? t.colorScheme.primary : Colors.transparent,
-              width: 1.5,
+              color: isSelected
+                  ? theme.colorScheme.primary
+                  : Colors.transparent,
+              width: 2,
             ),
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                      color: theme.colorScheme.primary.withValues(alpha: 0.2),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ]
+                : [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.03),
+                      blurRadius: 6,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
           ),
           child: Center(
             child: AnimatedDefaultTextStyle(
               duration: const Duration(milliseconds: 250),
-              style: t.textTheme.bodyMedium!.copyWith(
+              style: theme.textTheme.bodyMedium!.copyWith(
                 color: isSelected
-                    ? t.colorScheme.primary
-                    : t.textTheme.bodySmall?.color,
+                    ? theme.colorScheme.primary
+                    : theme.textTheme.bodySmall?.color,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                fontSize: 16,
+                letterSpacing: 1.2,
               ),
               child: Text(widget.type.toUpperCase()),
             ),

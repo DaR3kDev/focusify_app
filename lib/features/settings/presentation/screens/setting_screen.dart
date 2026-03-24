@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focusify_app/core/theme/theme_provider.dart';
 import 'package:focusify_app/features/timer/application/providers/settings_provider.dart';
+import 'package:focusify_app/shared/widgets/header/header.dart';
+import 'package:focusify_app/shared/widgets/title_section/title_section.dart';
 import '../widgets/slider_card.dart';
 import '../widgets/switch_card.dart';
 import '../widgets/theme_card.dart';
@@ -11,7 +13,7 @@ class SettingScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final t = Theme.of(context);
+    final theme = Theme.of(context);
 
     // Lectura del tema
     final themeMode = ref.watch(themeProvider);
@@ -25,19 +27,29 @@ class SettingScreen extends ConsumerWidget {
     bool notification = true;
 
     return Scaffold(
-      backgroundColor: t.scaffoldBackgroundColor,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           child: ListView(
             children: [
-              _Header(theme: t),
+              Header(title: 'CHRONOMETRIC SANCTUARY', icon: Icons.settings),
               const SizedBox(height: 30),
-              _TitleSection(theme: t),
-              const SizedBox(height: 25),
+              TitleSection(
+                title: "Configuración",
+                subtitle:
+                    "Crea el ambiente perfecto para sesiones de trabajo donde puedas concentrarte.",
+                description:
+                    "Personaliza el temporizador, automatiza tus sesiones y elige el entorno estético que más te inspire.",
+              ),
+              const SizedBox(height: 30),
 
               // Temporizador
-              _SectionTitle(title: "CONFIGURACIÓN DEL TEMPORIZADOR", theme: t),
+              _SectionTitle(
+                title: "CONFIGURACIÓN DEL TEMPORIZADOR",
+                theme: theme,
+              ),
+              const SizedBox(height: 10),
               SliderCard(
                 title: "Duración del enfoque",
                 value: settings.focusMinutes.toDouble(),
@@ -77,12 +89,13 @@ class SettingScreen extends ConsumerWidget {
                     ref.read(settingsProvider.notifier).updateCycles(v.round()),
               ),
 
-              const SizedBox(height: 20),
-              _SectionTitle(title: "AUTOMATION & FEEDBACK", theme: t),
+              const SizedBox(height: 25),
+              _SectionTitle(title: "AUTOMATIZACIÓN & FEEDBACK", theme: theme),
+              const SizedBox(height: 10),
               SwitchCard(
                 title: "Inicio automático de la siguiente sesión",
                 subtitle:
-                    "Inicia automáticamente el enfoque o el descanso después de que el temporizador expire",
+                    "Inicia automáticamente el enfoque o descanso al finalizar el temporizador",
                 value: autoStart,
                 onChanged: (v) => autoStart = v,
               ),
@@ -94,20 +107,25 @@ class SettingScreen extends ConsumerWidget {
                 onChanged: (v) => notification = v,
               ),
 
-              const SizedBox(height: 20),
-              _SectionTitle(title: "AESTHETIC ENVIRONMENT", theme: t),
+              const SizedBox(height: 25),
+              _SectionTitle(title: "ENTORNO ESTÉTICO", theme: theme),
+              const SizedBox(height: 10),
               Row(
                 children: [
-                  ThemeCard(
-                    type: "dark",
-                    themeMode: themeMode,
-                    controller: themeController,
+                  Expanded(
+                    child: ThemeCard(
+                      type: "dark",
+                      themeMode: themeMode,
+                      controller: themeController,
+                    ),
                   ),
                   const SizedBox(width: 12),
-                  ThemeCard(
-                    type: "light",
-                    themeMode: themeMode,
-                    controller: themeController,
+                  Expanded(
+                    child: ThemeCard(
+                      type: "light",
+                      themeMode: themeMode,
+                      controller: themeController,
+                    ),
                   ),
                 ],
               ),
@@ -115,53 +133,6 @@ class SettingScreen extends ConsumerWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _Header extends StatelessWidget {
-  const _Header({required this.theme});
-  final ThemeData theme;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          "CHRONOMETRIC\nSANCTUARY",
-          style: theme.textTheme.bodySmall?.copyWith(
-            fontSize: 12,
-            letterSpacing: 1,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _TitleSection extends StatelessWidget {
-  const _TitleSection({required this.theme});
-  final ThemeData theme;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Configuración",
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontSize: 26,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        const SizedBox(height: 5),
-        Text(
-          "Crea el ambiente perfecto para sesiones de trabajo en las que puedas concentrarte.",
-          style: theme.textTheme.bodySmall?.copyWith(fontSize: 12),
-        ),
-      ],
     );
   }
 }
@@ -174,13 +145,14 @@ class _SectionTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.only(bottom: 8),
       child: Text(
-        title,
+        title.toUpperCase(),
         style: theme.textTheme.bodySmall?.copyWith(
           color: theme.colorScheme.primary,
-          fontSize: 10,
+          fontSize: 12,
           letterSpacing: 1.5,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );

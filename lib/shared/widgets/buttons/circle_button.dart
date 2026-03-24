@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class CircleButton extends StatefulWidget {
+class CircleButton extends StatelessWidget {
   const CircleButton({
     super.key,
     required this.icon,
@@ -13,33 +13,37 @@ class CircleButton extends StatefulWidget {
   final VoidCallback? onTap;
 
   @override
-  State<CircleButton> createState() => _CircleButtonState();
-}
-
-class _CircleButtonState extends State<CircleButton> {
-  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return GestureDetector(
-      onTap: widget.onTap,
+      onTap: onTap,
       child: Column(
         children: [
           Container(
-            width: 45,
-            height: 45,
+            width: 50,
+            height: 50,
             decoration: BoxDecoration(
-              color: theme.colorScheme.surface.withValues(alpha: 0.6),
+              color: theme.colorScheme.primary.withValues(alpha: 0.15),
               shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 6,
+                  offset: const Offset(0, 3),
+                ),
+              ],
             ),
-            child: Icon(widget.icon, size: 20),
+            child: Icon(icon, size: 24, color: theme.colorScheme.primary),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           Text(
-            widget.label.toUpperCase(),
+            label.toUpperCase(),
             style: theme.textTheme.bodySmall?.copyWith(
-              fontSize: 9,
-              letterSpacing: 1,
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 1.2,
+              color: theme.textTheme.bodySmall?.color,
             ),
           ),
         ],
